@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>a)</title>
+
+    <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
+
+    <script id="shader-fs" type="x-shader/x-fragment">
+    precision mediump float;
+
+    uniform float count;
+    uniform vec2 offset;
+
+    float Mandl(vec2 pos)
+    {
+      vec2 zn = vec2(0, 0);
+      pos += vec2(-1.5, -1);
+
+      for (int i = 0; i < 1000; ++i)
+      {
+        if (i >= int(count))
+        {
+          break;
+        }
+
+        float x2 = zn.x * zn.x;
+        float y2 = zn.y * zn.y;
+        if (x2 + y2 > 4.0)
+        {
+          return float(i + 1) / count;
+        }
+
+        zn.y = zn.x * zn.y * 2.0 + pos.y;
+        zn.x = (x2 - y2) + pos.x; 
+      }
+      return 0.0;
+    }
+
+    void main(void)
+    {
+      vec2 pos = 2.0 * gl_FragCoord.xy / 400.0;
+
+      float n = Mandl(pos);
+
+      if (n == 0.0)
+        gl_FragColor = vec4(0.1, 0.2, 0.5, 1);
+      else
+        gl_FragColor = vec4(0.30, 0.47, 0.1, 0) * n + vec4(0.3, 0.3, 0, 1);
+    }
+</script>
+
+    <script id="shader-vs" type="x-shader/x-vertex">
+    attribute vec3 aVertexPosition;
+
+    uniform mat4 uMVMatrix;
+    uniform mat4 uPMatrix;
+
+    void main(void)
+    {
+        gl_Position = /**/vec4(aVertexPosition, 1.0);
+    }
+</script>
+
+
+    <script type="text/javascript">
+        let gl;
+        function initGL(canvas) {
+            try {
+                gl = canvas.getContext("experimental-webgl");
+                gl.viewportWidth = canvas.width;
+                gl.viewportHeight = canvas.height;
+            } catch (e) {
+            }
+            if (!gl) {
+                alert("Could not initialise WebGL");
+            }
+        }
+
+
+        function getShader(gl, id) {
+            let shaderScript = document.getElementById(id);
+            if (!shaderScript) {
+                return null;
+            }
+
+            let str = "";
+            let k = shaderScript.firstChild;
+            while (k) {
+                if (k.nodeType == 3) {
+                    str += k.textContent;
+                }
+                k = k.nextSibling;
+            }
+
+            let shader;
+            if (shaderScript.type == "x-shader/x-fragment") {
+                shader = gl.createShader(gl.FRAGMENT_SHADER);
+            } else if (shaderScript.type == "x-shader/x-vertex") {
+                shader = gl.createShader(gl.VERTEX_SHADER);
+            } else {
+                return null;
+            }
+
+            gl.shaderSource(shader, str);
+            gl.compileShader(shader);
+
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                alert(gl.getShaderInfoLog(shader));
+                return null;
+            }
+
+            return shader;
+        }
+
+        let shaderProgram;
+
+        function initShaders() {
+            let fragmentShader = getShader(gl, "shader-fs");
+            let vertexShader = getShader(gl, "shader-vs");
+
+            shaderProgram = gl.createProgram();
+            gl.attachShader(shaderProgram, vertexShader);
+            gl.attachShader(shaderProgram, fragmentShader);
+            gl.linkProgram(shaderProgram);
+
+            if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+                alert("Could not initialise shaders");
+            }
+
+            gl.useProgram(shaderProgram);
+
+            shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+            gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+
+            shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+            shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+            shaderProgram.a = gl.getUniformLocation(shaderProgram, "count");
+            shaderProgram.Offset = gl.getUniformLocation(shaderProgram, "offset");
+        }
+
+
+        let mvMatrix = mat4.create();
+        let pMatrix = mat4.create();
+
+        function setMatrixUniforms() {
+            gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
+            gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+            gl.uniform1f(shaderProgram.a, a);
+            gl.uniform2f(shaderProgram.Offset, OffsetX, OffsetY);
+        }
+
+        let squareVertexPositionBuffer;
+
+        function initBuffers() {
+            squareVertexPositionBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
+            vertices = [
+                1.0, 1.0, 0.0,
+                -1.0, 1.0, 0.0,
+                1.0, -1.0, 0.0,
+                -1.0, -1.0, 0.0
+            ];
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+            squareVertexPositionBuffer.itemSize = 3;
+            squareVertexPositionBuffer.numItems = 4;
+        }
+
+
+        function drawScene() {
+            gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+            mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+
+            mat4.identity(mvMatrix);
+
+            mat4.translate(mvMatrix, [-1.5, 0.0, -7.0]);
+
+            mat4.translate(mvMatrix, [3.0, 0.0, 0.0]);
+            gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
+            gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            setMatrixUniforms();
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareVertexPositionBuffer.numItems);
+        }
+
+        function tick() {
+            window.requestAnimationFrame(tick);
+            drawScene();
+        }
+
+
+        function webGLStart() {
+            a = 30;
+            document.getElementById('a)').value = a;
+
+            let canvas = document.getElementById("wegl-canvas");
+            initGL(canvas);
+            initShaders();
+            initBuffers();
+
+            gl.clearColor(0.0, 0.0, 0.0, 1.0);
+            gl.enable(gl.DEPTH_TEST);
+
+            drawScene();
+            tick();
+        }
+
+        function update_checkers_cell_width() {
+            data = document.getElementById('a)').value;
+            a = parseInt(data);
+            if (isNaN(a))
+                a = 1;
+        }
+
+        let dX;
+        let dY;
+
+        function mouseMoveEvent(e) {
+            dX = e.movementX();
+            dY = e.movementY();
+        }
+
+        let
+            isDragging = false,
+            zoom = 1.0,
+            OffsetX = 0.0,
+            OffsetY = 0.0;
+
+        function mouseClickEvent(e) {
+            OffsetX;
+        }
+    </script>
+
+
+</head>
+
+
+<body onload="webGLStart();">
+    <canvas id="wegl-canvas" style="border: none;" width="500" height="500"
+        onmousemove="mouseMoveEvent(event)"></canvas>
+
+    <br />
+
+    <label for="a)"> a)</label> <input type="text" id="a)" onkeyup="update_checkers_cell_width()"><br>
+
+</body>
+
+</html>
