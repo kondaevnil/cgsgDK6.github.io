@@ -218,10 +218,6 @@
         zoom = 1.0,
         OffsetX = 0.0,
         OffsetY = 0.0;
-
-      function mouseClickEvent(e) {
-        OffsetX;
-      }
     </script>
   </head>
 
@@ -241,7 +237,10 @@
       onmouseout="isDragging=false;"
       onmouseup="isDragging=false;"
       onwheel="zoom=zoom*(event.deltaY>0?1.1:0.8);"
+      onresize="resizeCanvas(event);"
     ></canvas>
+
+    <div id="div"></div>
 
     <br />
 
