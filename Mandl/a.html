@@ -294,7 +294,7 @@
 
       function tick() {
         window.requestAnimationFrame(tick);
-        resizeCanvas();
+        // resizeCanvas();
         drawScene();
       }
 
@@ -322,7 +322,7 @@
         }, alert);
       }
 
-      //   window.addEventListener("resize", canvasResize, false);
+      window.addEventListener("resize", canvasResize, false);
 
       function update_mande_iterations() {
         data = document.getElementById("a)").value;
@@ -347,8 +347,8 @@
           canvas.width != canvas.clientWidth ||
           canvas.height != canvas.clientHeight
         ) {
-          canvas.width = canvas.clientWidth;
-          canvas.height = canvas.clientHeight;
+          canvas.width = window.innerWidth * 0.8;
+          canvas.height = window.innerHeight;
           fullWidth = canvas.width;
           fullHeight = canvas.height;
           gl.viewport(0, 0, canvas.width, canvas.height);
