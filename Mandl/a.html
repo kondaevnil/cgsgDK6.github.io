@@ -130,6 +130,28 @@
         gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+        mat4.perspective(
+          45,
+          gl.viewportWidth / gl.viewportHeight,
+          0.1,
+          100.0,
+          pMatrix
+        );
+
+        mat4.identity(mvMatrix);
+
+        mat4.translate(mvMatrix, [-1.5, 0.0, -7.0]);
+
+        mat4.translate(mvMatrix, [3.0, 0.0, 0.0]);
+        gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
+        gl.vertexAttribPointer(
+          shaderProgram.vertexPositionAttribute,
+          squareVertexPositionBuffer.itemSize,
+          gl.FLOAT,
+          false,
+          0,
+          0
+        );
         setUniforms();
         gl.drawArrays(
           gl.TRIANGLE_STRIP,
@@ -182,7 +204,7 @@
         }
       }
 
-      //   window.addEventListener("resize", canvasResize, false);
+      window.addEventListener("resize", canvasResize, false);
 
       function resizeCanvas(e) {
         canvas.width = window.innerWidth;
@@ -196,6 +218,10 @@
         zoom = 1.0,
         OffsetX = 0.0,
         OffsetY = 0.0;
+
+      function mouseClickEvent(e) {
+        OffsetX;
+      }
     </script>
   </head>
 
