@@ -222,32 +222,28 @@
   </head>
 
   <body onload="webGLStart();">
-    <div id="a" style="z-index: 999">
-      <canvas
-        id="wegl-canvas"
-        style="
-          position: fixed;
-          top: 0px;
-          right: 0px;
-          border: 0px;
-          width: 100%;
-          height: 100%;
-          z-index: 998;
-        "
-        onmousemove="mouseMoveEvent(event)"
-        onmousedown="isDragging=true;"
-        onmouseout="isDragging=false;"
-        onmouseup="isDragging=false;"
-        onwheel="zoom=zoom*(event.deltaY>0?1.1:0.8);"
-        onresize="resizeCanvas(event);"
-      ></canvas>
-    </div>
-
-    <div id="div"></div>
+    <canvas
+      id="wegl-canvas"
+      style="
+        position: fixed;
+        top: 0px;
+        right: 0px;
+        border: 0px;
+        width: 100%;
+        height: 100%;
+        z-index: 998;
+      "
+      onmousemove="mouseMoveEvent(event)"
+      onmousedown="isDragging=true;"
+      onmouseout="isDragging=false;"
+      onmouseup="isDragging=false;"
+      onwheel="zoom=zoom*(event.deltaY>0?1.1:0.8);"
+      onresize="resizeCanvas(event);"
+    ></canvas>
 
     <br />
 
-    <label for="a)"> a)</label>
+    <label for="a)" style="z-index: 1000"> a)</label>
     <input type="text" id="a)" onkeyup="update_mande_iterations()" /><br />
   </body>
 </html>
