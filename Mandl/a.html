@@ -152,6 +152,7 @@
       }
 
       let shaderProgram;
+      let canvas;
 
       // function initShaders() {
       //     let fragmentShader = getShader(gl, "shader-fs");
@@ -301,8 +302,9 @@
         a = 30;
         document.getElementById("a)").value = a;
 
-        let canvas = document.getElementById("wegl-canvas");
+        canvas = document.getElementById("wegl-canvas");
         initGL(canvas);
+        resizeCanvas();
 
         createShaderProgram([
           { path: "./shaders/vert.glsl", type: "Vertex Shader" },
@@ -319,6 +321,8 @@
           tick();
         }, alert);
       }
+
+      //   window.addEventListener("resize", canvasResize, false);
 
       function update_mande_iterations() {
         data = document.getElementById("a)").value;
@@ -356,7 +360,14 @@
   <body onload="webGLStart();">
     <canvas
       id="wegl-canvas"
-      style="border: none"
+      style="
+        position: fixed;
+        top: 0px;
+        right: 0px;
+        border: 0px;
+        width: 80%;
+        height: 100%;
+      "
       width="500"
       height="500"
       onmousemove="mouseMoveEvent(event)"
