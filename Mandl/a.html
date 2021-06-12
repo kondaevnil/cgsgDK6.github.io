@@ -207,7 +207,7 @@
       window.addEventListener("resize", resizeCanvas, false);
 
       function resizeCanvas(e) {
-        canvas.width = window.innerWidth * 0.8;
+        canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
         gl.viewportWidth = canvas.width;
@@ -222,23 +222,25 @@
   </head>
 
   <body onload="webGLStart();">
-    <canvas
-      id="wegl-canvas"
-      style="
-        position: fixed;
-        top: 0px;
-        right: 0px;
-        border: 0px;
-        width: 80%;
-        height: 100%;
-      "
-      onmousemove="mouseMoveEvent(event)"
-      onmousedown="isDragging=true;"
-      onmouseout="isDragging=false;"
-      onmouseup="isDragging=false;"
-      onwheel="zoom=zoom*(event.deltaY>0?1.1:0.8);"
-      onresize="resizeCanvas(event);"
-    ></canvas>
+    <div id="a">
+      <canvas
+        id="wegl-canvas"
+        style="
+          position: fixed;
+          top: 0px;
+          right: 0px;
+          border: 0px;
+          width: 100%;
+          height: 100%;
+        "
+        onmousemove="mouseMoveEvent(event)"
+        onmousedown="isDragging=true;"
+        onmouseout="isDragging=false;"
+        onmouseup="isDragging=false;"
+        onwheel="zoom=zoom*(event.deltaY>0?1.1:0.8);"
+        onresize="resizeCanvas(event);"
+      ></canvas>
+    </div>
 
     <div id="div"></div>
 
