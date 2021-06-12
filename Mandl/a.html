@@ -91,6 +91,10 @@
         shaderProgram.a = gl.getUniformLocation(shaderProgram, "count");
         shaderProgram.Offset = gl.getUniformLocation(shaderProgram, "offset");
         shaderProgram.Zoom = gl.getUniformLocation(shaderProgram, "zoom");
+        shaderProgram.Resolution = gl.getUniformLocation(
+          shaderProgram,
+          "resolution"
+        );
       }
 
       let mvMatrix = mat4.create();
@@ -102,6 +106,7 @@
         gl.uniform1f(shaderProgram.a, a);
         gl.uniform1f(shaderProgram.Zoom, zoom);
         gl.uniform2f(shaderProgram.Offset, OffsetX, OffsetY);
+        gl.uniform2f(shaderProgram.Resolution, canvas.width, canvas.height);
       }
 
       let squareVertexPositionBuffer;
@@ -125,28 +130,6 @@
         gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        mat4.perspective(
-          45,
-          gl.viewportWidth / gl.viewportHeight,
-          0.1,
-          100.0,
-          pMatrix
-        );
-
-        mat4.identity(mvMatrix);
-
-        mat4.translate(mvMatrix, [-1.5, 0.0, -7.0]);
-
-        mat4.translate(mvMatrix, [3.0, 0.0, 0.0]);
-        gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
-        gl.vertexAttribPointer(
-          shaderProgram.vertexPositionAttribute,
-          squareVertexPositionBuffer.itemSize,
-          gl.FLOAT,
-          false,
-          0,
-          0
-        );
         setUniforms();
         gl.drawArrays(
           gl.TRIANGLE_STRIP,
