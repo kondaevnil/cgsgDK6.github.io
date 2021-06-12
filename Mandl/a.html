@@ -7,7 +7,7 @@
 
     <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
 
-    <script id="shader-fs" type="x-shader/x-fragment">
+    <!-- <script id="shader-fs" type="x-shader/x-fragment">
     precision mediump float;
 
     uniform float count;
@@ -63,7 +63,7 @@
     {
         gl_Position = /**/vec4(aVertexPosition, 1.0);
     }
-</script>
+</script> -->
 
 
     <script type="text/javascript">
@@ -81,58 +81,120 @@
         }
 
 
-        function getShader(gl, id) {
-            let shaderScript = document.getElementById(id);
-            if (!shaderScript) {
-                return null;
-            }
+        // function getShader(gl, id) {
+        //     let shaderScript = document.getElementById(id);
+        //     if (!shaderScript) {
+        //         return null;
+        //     }
 
-            let str = "";
-            let k = shaderScript.firstChild;
-            while (k) {
-                if (k.nodeType == 3) {
-                    str += k.textContent;
-                }
-                k = k.nextSibling;
-            }
+        //     let str = "";
+        //     let k = shaderScript.firstChild;
+        //     while (k) {
+        //         if (k.nodeType == 3) {
+        //             str += k.textContent;
+        //         }
+        //         k = k.nextSibling;
+        //     }
 
-            let shader;
-            if (shaderScript.type == "x-shader/x-fragment") {
-                shader = gl.createShader(gl.FRAGMENT_SHADER);
-            } else if (shaderScript.type == "x-shader/x-vertex") {
-                shader = gl.createShader(gl.VERTEX_SHADER);
-            } else {
-                return null;
-            }
+        //     let shader;
+        //     if (shaderScript.type == "x-shader/x-fragment") {
+        //         shader = gl.createShader(gl.FRAGMENT_SHADER);
+        //     } else if (shaderScript.type == "x-shader/x-vertex") {
+        //         shader = gl.createShader(gl.VERTEX_SHADER);
+        //     } else {
+        //         return null;
+        //     }
 
-            gl.shaderSource(shader, str);
-            gl.compileShader(shader);
+        //     gl.shaderSource(shader, str);
+        //     gl.compileShader(shader);
 
-            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-                alert(gl.getShaderInfoLog(shader));
-                return null;
-            }
+        //     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        //         alert(gl.getShaderInfoLog(shader));
+        //         return null;
+        //     }
 
-            return shader;
+        //     return shader;
+        // }
+
+        function createShader(shaderPath, shaderType) {
+            return new Promise(function (resolve, reject) {
+                let shader;
+                fetch(shaderPath)
+                    .then(response => {
+                        return response.text();
+                    })
+                    .then(shaderText => {
+                        if (shaderType == "Vertex Shader") {
+                            shader = gl.createShader(gl.VERTEX_SHADER);
+                        } else if (shaderType == "Fragment Shader") {
+                            shader = gl.createShader(gl.FRAGMENT_SHADER);
+                        } else {
+                            reject(new Error(`Shader type "${shaderType}" doesn't exist`));
+                        }
+
+                        gl.shaderSource(shader, shaderText);
+                        gl.compileShader(shader);
+
+                        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                            alert(gl.getShaderInfoLog(shader));
+                            reject(new Error("Compile shader error"));
+                        }
+                        resolve(shader);
+                    });
+            });
         }
 
         let shaderProgram;
 
-        function initShaders() {
-            let fragmentShader = getShader(gl, "shader-fs");
-            let vertexShader = getShader(gl, "shader-vs");
+        // function initShaders() {
+        //     let fragmentShader = getShader(gl, "shader-fs");
+        //     let vertexShader = getShader(gl, "shader-vs");
 
-            shaderProgram = gl.createProgram();
-            gl.attachShader(shaderProgram, vertexShader);
-            gl.attachShader(shaderProgram, fragmentShader);
-            gl.linkProgram(shaderProgram);
+        //     shaderProgram = gl.createProgram();
+        //     gl.attachShader(shaderProgram, vertexShader);
+        //     gl.attachShader(shaderProgram, fragmentShader);
+        //     gl.linkProgram(shaderProgram);
 
-            if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-                alert("Could not initialise shaders");
-            }
+        //     if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+        //         alert("Could not initialise shaders");
+        //     }
 
+        //     gl.useProgram(shaderProgram);
+
+        //     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+        //     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+
+        //     shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+        //     shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+        //     shaderProgram.a = gl.getUniformLocation(shaderProgram, "count");
+        //     shaderProgram.Offset = gl.getUniformLocation(shaderProgram, "offset");
+        //     shaderProgram.Zoom = gl.getUniformLocation(shaderProgram, "zoom");
+        // }
+
+        function createShaderProgram(shadersInfo) {
+            return new Promise((resolve, reject) => {
+                let shaders = shadersInfo.map(Info => createShader(Info.path, Info.type));
+                let shaderProgram;
+
+                Promise.all(shaders)
+                    .then(createdShaders => {
+                        shaderProgram = gl.createProgram();
+                        // attach shaders
+                        for (let shader of createdShaders) {
+                            gl.attachShader(shaderProgram, shader);
+                        }
+                        gl.linkProgram(shaderProgram);
+
+                        if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+                            reject(new Error("Could not initialise shaders"));
+                        }
+                        resolve(shaderProgram);
+                    }, alert);
+            });
+        }
+
+        function glEnableUniforms() {
             gl.useProgram(shaderProgram);
-
             shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
             gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
@@ -147,7 +209,7 @@
         let mvMatrix = mat4.create();
         let pMatrix = mat4.create();
 
-        function setMatrixUniforms() {
+        function setUniforms() {
             gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
             gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
             gl.uniform1f(shaderProgram.a, a);
@@ -185,7 +247,7 @@
             mat4.translate(mvMatrix, [3.0, 0.0, 0.0]);
             gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
             gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-            setMatrixUniforms();
+            setUniforms();
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareVertexPositionBuffer.numItems);
         }
 
@@ -201,17 +263,22 @@
 
             let canvas = document.getElementById("wegl-canvas");
             initGL(canvas);
-            initShaders();
-            initBuffers();
 
-            gl.clearColor(0.0, 0.0, 0.0, 1.0);
-            gl.enable(gl.DEPTH_TEST);
+            createShaderProgram([{ path: './shaders/vert.glsl', type: 'Vertex Shader' }, { path: './shaders/frag.glsl', type: 'Fragment Shader' }])
+                .then(program => {
+                    shaderProgram = program;
+                    glEnableUniforms();
+                    initBuffers();
 
-            drawScene();
-            tick();
+                    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+                    gl.enable(gl.DEPTH_TEST);
+
+                    drawScene();
+                    tick();
+                }, alert);
         }
 
-        function update_checkers_cell_width() {
+        function update_mande_iterations() {
             data = document.getElementById('a)').value;
             a = parseInt(data);
             if (isNaN(a))
@@ -247,7 +314,7 @@
 
     <br />
 
-    <label for="a)"> a)</label> <input type="text" id="a)" onkeyup="update_checkers_cell_width()"><br>
+    <label for="a)"> a)</label> <input type="text" id="a)" onkeyup="update_mande_iterations()"><br>
 
 </body>
 
