@@ -160,11 +160,13 @@
         drawScene();
       }
 
+      let canvas;
+
       function webGLStart() {
         a = 30;
         document.getElementById("a)").value = a;
 
-        let canvas = document.getElementById("wegl-canvas");
+        canvas = document.getElementById("wegl-canvas");
         initGL(canvas);
 
         createShaderProgram([
