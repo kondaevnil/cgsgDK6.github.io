@@ -3,6 +3,7 @@ precision mediump float;
 uniform float count;
 uniform float zoom;
 uniform vec2 offset;
+uniform vec2 resolution;
 
 float Mandl(vec2 pos)
 {
@@ -32,7 +33,7 @@ float Mandl(vec2 pos)
 
 void main(void)
 {
-    vec2 pos = -1.0 + 2.0 * gl_FragCoord.xy / 400.0;
+    vec2 pos = -1.0 + 2.0 * gl_FragCoord.xy / resolution.xy;
 
     float n = Mandl(pos);
 
