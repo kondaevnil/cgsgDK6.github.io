@@ -222,7 +222,7 @@
   </head>
 
   <body onload="webGLStart();">
-    <div id="a">
+    <div id="a" style="z-index: 999">
       <canvas
         id="wegl-canvas"
         style="
@@ -232,6 +232,7 @@
           border: 0px;
           width: 100%;
           height: 100%;
+          z-index: 998;
         "
         onmousemove="mouseMoveEvent(event)"
         onmousedown="isDragging=true;"
