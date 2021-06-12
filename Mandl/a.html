@@ -293,6 +293,7 @@
 
       function tick() {
         window.requestAnimationFrame(tick);
+        resizeCanvas();
         drawScene();
       }
 
@@ -314,7 +315,6 @@
           gl.clearColor(0.0, 0.0, 0.0, 1.0);
           gl.enable(gl.DEPTH_TEST);
 
-          resizeCanvas();
           drawScene();
           tick();
         }, alert);
@@ -357,6 +357,8 @@
     <canvas
       id="wegl-canvas"
       style="border: none"
+      width="500"
+      height="500"
       onmousemove="mouseMoveEvent(event)"
       onmousedown="isDragging=true;"
       onmouseout="isDragging=false;"
