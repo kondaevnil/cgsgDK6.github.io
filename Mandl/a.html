@@ -141,7 +141,6 @@
       }
 
       let shaderProgram;
-      let canvas;
 
       // function initShaders() {
       //     let fragmentShader = getShader(gl, "shader-fs");
@@ -291,7 +290,7 @@
         a = 30;
         document.getElementById("a)").value = a;
 
-        canvas = document.getElementById("wegl-canvas");
+        let canvas = document.getElementById("wegl-canvas");
         initGL(canvas);
         // resizeCanvas();
 
