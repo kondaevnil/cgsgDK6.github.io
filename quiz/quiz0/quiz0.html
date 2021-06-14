@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <script type="text/javascript">
+        async function getText(filepath) {
+            let file = await fetch(filepath);
+            return await file.text();
+        }
+
+        function result(text) {
+            let strings = text.split("\r\n");
+            let str1 = strings[0].split(' ');
+            let
+                n = parseInt(str1[0]),
+                k = parseInt(str1[1]);
+            let map = new Map();
+            let a = [];
+
+            for (let str of strings.slice(1, n + 1)) {
+                if (map.has(str)) {
+                    map.set(str, map.get(str) + 1);
+                } else {
+                    map.set(str, 1);
+                }
+            }
+
+            for (let [key, value] of map.entries()) {
+                if (value != 3) a.push(key);
+            }
+            return a;
+        }
+
+        async function main() {
+            let text = await getText("input.txt");
+            for (let x of result(text)) {
+                document.getElementById("flex").innerHTML += x + ' ';
+            }
+        }
+    </script>
+</head>
+
+<body onload='main();'>
+    <p id="flex"></p>
+
+</body>
+
+</html>
