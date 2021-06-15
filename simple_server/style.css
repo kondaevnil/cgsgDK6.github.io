@@ -45,6 +45,7 @@ body {
 .divOutMessage {
     margin-left: 15px;
     padding-left: 15px;
+    background-color: red;
 }
 
 .input {
