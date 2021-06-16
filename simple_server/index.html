@@ -21,6 +21,34 @@
             }
         }
 
+        function displayMessage(messageList) {
+            let outMessages = document.getElementById("outMessage");
+
+            let user_name_unit,
+                user_message_unit,
+                message_block;
+
+            while (outMessages.children[0])
+                outMessages.removeChild(outMessages.lastChild);
+
+            for (let message of messageList) {
+                user_name_unit = document.createElement("p");
+                user_message_unit = document.createElement("p");
+                message_block = document.createElement("div");
+
+                user_message_unit.classList.add("userMessage");
+                user_name_unit.classList.add("userName");
+                message_block.classList.add("divUserMessage");
+
+                user_name_unit.innerText = `${message.name}:`;
+                user_message_unit.innerText = message.message;
+
+                message_block.appendChild(user_name_unit);
+                message_block.appendChild(user_message_unit);
+                outMessages.appendChild(message_block);
+            }
+        }
+
         function getMessage() {
             let outMessages = document.getElementById("outMessage");
 
@@ -32,12 +60,14 @@
                 })
                 .then(json => {
                     let messages = JSON.parse(json);
-                    let text = "";
+                    // let text = "";
 
-                    for (message of messages) {
-                        text += `${message.name}: ${message.message}<br>`;
-                    }
-                    outMessages.innerHTML = text;
+                    // for (message of messages) {
+                    //     text += `${message.name}: ${message.message}<br>`;
+                    // }
+                    // outMessages.innerHTML = text;
+
+                    displayMessage(messages);
                     tick();
                 });
         }
@@ -50,6 +80,7 @@
 
 <body onload="tick();">
     <div class="divDefault divMain">
+        <div id="a" class="divImage"></div>
         <div id="userInterection" class="divDefault">
             <div id="userInput" class="divUserInterection">
                 <input id="name" class="input" placeholder="username" ; text-align: center;>
