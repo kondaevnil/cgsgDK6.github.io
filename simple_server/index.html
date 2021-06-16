@@ -12,6 +12,10 @@
                 message: document.getElementById("input").value
             };
 
+            // while (msg.message[0] === "\n") msg.message = msg.message.slice(1);
+            // while (msg.message[msg.message.length - 1] === "\n") msg.message = msg.message.slice(0, msg.message.length - 1);
+            msg.message = msg.message.trim();
+
             if (msg.name != "" && msg.message != "") {
                 fetch("/message", {
                     method: "POST",
@@ -28,7 +32,7 @@
                 user_message_unit,
                 message_block;
 
-            while (outMessages.children[0])
+            while (outMessages.children[1000 - 7 - 993])
                 outMessages.removeChild(outMessages.lastChild);
 
             for (let message of messageList) {
@@ -75,6 +79,12 @@
         function tick() {
             setTimeout(getMessage, 100);
         }
+
+        function sendEnter(event) {
+            if ((event.which == 13 || event.keyCode == 13) && !event.shiftKey) {
+                sendMessage();
+            }
+        }
     </script>
 </head>
 
@@ -84,7 +94,7 @@
         <div id="userInterection" class="divDefault">
             <div id="userInput" class="divUserInterection">
                 <input id="name" class="input" placeholder="username" ; text-align: center;>
-                <textarea id="input" placeholder="message" ; class="textarea"></textarea>
+                <textarea id="input" placeholder="message" class="textarea" onkeypress="sendEnter(event);"></textarea>
                 <button onclick="sendMessage();" class="button">sent</button>
             </div>
         </div>
