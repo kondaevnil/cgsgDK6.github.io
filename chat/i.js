@@ -1,4 +1,3 @@
-const { parse } = require('cookie');
 const express = require('express');
 const app = express();
 const http = require('http');
@@ -8,27 +7,16 @@ const io = new Server(server);
 
 const port = 8080;
 
-let messages = [];
-
-app.use(express.static(__dirname + '/public'));
-
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
+// io.on('connection', socket => {
+//     socket.broadcast.emit('hi');
+// });
+
 io.on('connection', socket => {
-    // console.log('user connected');
-
-    // socket.on('disconnect', () => {
-    //     console.log('user disconnected');
-    // });
-
     socket.on('chat message', msg => {
-        let message = JSON.parse(msg);
-
-        messages.push(message);
-        console.log(`message: ${msg}`);
-
         io.emit('chat message', msg);
     });
 });
