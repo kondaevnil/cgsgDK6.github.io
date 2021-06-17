@@ -1,6 +1,6 @@
 body {
-  height: 100vw;
-  width: 100vh;
+  height: fit-content;
+  width: fit-content;
   margin: 0;
   z-index: 11;
 }

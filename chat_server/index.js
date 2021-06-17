@@ -17,11 +17,15 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', socket => {
-    // console.log('user connected');
+    console.log('user connected');
 
-    // socket.on('disconnect', () => {
-    //     console.log('user disconnected');
-    // });
+    for (let message of messages) {
+        socket.emit('chat message', JSON.stringify(message));
+    }
+
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+    });
 
     socket.on('chat message', msg => {
         let message = JSON.parse(msg);
